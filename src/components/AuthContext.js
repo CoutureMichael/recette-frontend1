@@ -11,14 +11,16 @@ export default function AuthProvider({ children }) {
   });
 
   const login = async (username, password) => {
-    const { data } = await api.post("/api/auth/login", { username, password });
+    const { data } = await api.post("/api/users/login", { username, password });
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
     setUser(data.user);
+    return data.user;
   };
 
   const register = async (username, password) => {
-    await api.post("/api/auth/register", { username, password });
+    const { data } = await api.post("/api/users/register", { username, password });
+    return data; // optionnel, pour afficher un toast/redirect après
   };
 
   const logout = () => {
@@ -27,5 +29,9 @@ export default function AuthProvider({ children }) {
     setUser(null);
   };
 
-  return <Ctx.Provider value={{ user, login, register, logout }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={{ user, login, register, logout }}>
+      {children}
+    </Ctx.Provider>
+  );
 }
